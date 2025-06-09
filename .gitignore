@@ -110,5 +110,3 @@ dist/
 go.work
 
 .DS_Store
-
-impl/third_party/git.pinquest.com/qmsg/impl/
