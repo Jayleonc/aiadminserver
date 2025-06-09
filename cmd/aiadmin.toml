@@ -1,0 +1,25 @@
+Port = 10642
+BindIp = "$inner_ip"
+LogLevel = "debug"
+LogDir = "$default"
+LogName = ""
+SkipRegisterDispatch = 0
+Db = "$dispatch.mysql.biz"
+RedisSvrAutoGen = "redis4session"
+ResourceType = "quan_pub"
+MilvusAddr = "101.33.228.3:19530"
+EmbeddingModel = "text-embedding-v2"
+
+DefaultEmbeddingProviderID = "tongyi"
+DefaultEmbeddingModelName = "text-embedding-v2"
+
+[LLMProviders.tongyi]
+APIKey = "sk-49e83005efca4e51b85d5225d7feee0e"
+BaseURL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+# key 直接为 provider 类型，如 tongyi，内容只保留 APIKey 和 BaseURL
+
+# 示例：如果企业有另一个通义账号，可以再加一个
+# [LLMProviders.tongyi-finance-account]
+# Provider = "tongyi"
+# APIKey   = "sk-another-tongyi-key"
+# BaseURL  = "https://dashscope-finance.aliyuncs.com/compatible-mode/v1"

@@ -1,0 +1,103 @@
+#.go-cache:
+#    variables:
+#        GOPATH: $CI_PROJECT_DIR/.go
+#    cache:
+#        paths:
+#            - ./go/pkg/mod/
+
+# 预定义参数 https://docs.gitlab.cn/jh/ci/variables/predefined_variables.html
+
+stages:
+    - lint
+    - store
+
+before_script:
+    - sudo docker info
+    - go version
+    - go env -w GO111MODULE=on
+    - go env -w GOPROXY="http://10.0.0.25:19999"
+    - go env -w GOMODCACHE="/data/gitmod/"
+    - go env -w GOSUMDB=off
+
+golangci-lint:
+    #    image: golangci/golangci-lint:v1.49.0
+    stage: lint
+    tags:
+        - tx-dev2-shared
+    only:
+        - merge_requests
+        - refs
+            - master
+            - test
+    allow_failure: false
+    script:
+        - curl -o .golangci.yml "https://git.pinquest.cn/api/v4/projects/705/repository/files/.golangci.yml/raw?inline=false&ref=master&private_token=Hs9otpuzAPMFzdQ74mgT"
+        - go mod tidy -e -v
+        - GOPROXY="https://goproxy.cn" go install -v github.com/golangci/golangci-lint/cmd/golangci-lint@v1.49.0
+        - GOGC=5 golangci-lint run -v
+
+pkg-push:
+    stage: store
+    tags:
+        - tx-dev2-shared
+    only:
+        refs:
+            - master
+            - test
+    when: manual
+    before_script:
+        - innertool_updater
+    script:
+        - git checkout ${CI_COMMIT_BRANCH}
+        - make store M="${CI_COMMIT_TITLE}"
+
+pkg-merge:
+    stage: store
+    tags:
+        - tx-dev2-shared
+    only:
+        - merge_requests
+        - refs
+            - master
+            - test
+    when: manual
+    before_script:
+        - innertool_updater
+    script:
+        - git checkout ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
+        - make store M="${CI_MERGE_REQUEST_TITLE}"
+
+docker-push:
+    stage: store
+    tags:
+        - tx-dev2-shared
+    only:
+        - refs
+            - master
+            - test
+    when: manual
+    script:
+        - sudo docker login 106.55.228.202:30010 --username $DOCKERUSER --password $DOCKERPASSWORD
+        - sudo docker build -t 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-${CI_COMMIT_SHORT_SHA} .
+        - sudo docker tag 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-${CI_COMMIT_SHORT_SHA} 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-latest
+        - sudo docker push 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-${CI_COMMIT_SHORT_SHA}
+        - sudo docker push 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-latest
+
+docker-merge:
+    stage: store
+    tags:
+        - tx-dev2-shared
+    only:
+        - merge_requests
+        - refs
+            - master
+            - test
+    when: manual
+    before_script:
+        - innertool_updater
+    script:
+        - sudo docker login 106.55.228.202:30010 --username $DOCKERUSER --password $DOCKERPASSWORD
+        - sudo docker build -t 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-${CI_MERGE_REQUEST_DIFF_BASE_SHA} .
+        - sudo docker tag 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-${CI_MERGE_REQUEST_DIFF_BASE_SHA} 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-latest
+        - sudo docker push 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-${CI_MERGE_REQUEST_DIFF_BASE_SHA}
+        - sudo docker push 106.55.228.202:30010/ql/${CI_PROJECT_NAME}:${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}-latest

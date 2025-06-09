@@ -1,0 +1,641 @@
+# options for analysis running
+run:
+    timeout: 30m
+    skip-dirs-use-default: false
+    skip-files:
+        - ".*_pie.go"
+        - ".*autogen.go"
+        - ".*errcode.go"
+    modules-download-mode: mod
+    allow-parallel-runners: true
+    concurrency: 1
+output:
+    format: colored-line-number
+    print-issued-lines: true
+    print-linter-name: true
+    uniq-by-line: true
+    sort-results: true
+linters-settings:
+    bidichk:
+        left-to-right-embedding: true
+        right-to-left-embedding: true
+        pop-directional-formatting: true
+        left-to-right-override: true
+        right-to-left-override: true
+        left-to-right-isolate: true
+        right-to-left-isolate: true
+        first-strong-isolate: true
+        pop-directional-isolate: true
+    dogsled:
+        max-blank-identifiers: 2
+    errcheck:
+        check-type-assertions: false
+        check-blank: true
+        disable-default-exclusions: true
+        ignore: fmt:.*,io/ioutil:^Read.*/strconv.Parse*,git.pinquest.cn/qlb/core:GetHeader.*,git.pinquest.cn/qlb/core:GetPinHeader.*
+        exclude-functions:
+            - io.Copy(*bytes.Buffer)
+            - io.Copy(os.Stdout)
+            - (*bytes.Buffer).WriteString
+            - (*bytes.Buffer).Write
+            - (git.pinquest.cn/base/log.ILogger).Write
+            - (*git.pinquest.cn/base/log.FileLogger).realWrite
+            - (*git.pinquest.cn/qlb/brick/distlock.Mutex).Unlock
+            - (*git.pinquest.cn/qlb/brick/rpc.Context).SetReqHeader
+            - (*git.pinquest.cn/qlb/brick/rpc.Context).SetRspHeader
+    errorlint:
+        errorf: true
+        asserts: false
+        comparison: false
+    exhaustive:
+        check-generated: false
+        default-signifies-exhaustive: false
+        package-scope-only: false
+        ignore-enum-members: ".+Nil"
+    gocyclo:
+        min-complexity: 20
+    godox:
+        keywords:
+            - REVIEW
+            - OPTIMIZE
+            - HACK
+    gofmt:
+        simplify: false
+    gosec:
+        includes:
+            - G103
+            - G104
+            - G106
+            - G108
+            - G109
+            - G110
+            - G201
+            - G202
+            - G203
+            - G301
+            - G302
+            - G303
+            - G304
+            - G305
+            - G307
+            - G401
+            - G402
+            - G403
+            - G601
+        exclude-generated: true
+        severity: "low"
+        confidence: "low"
+    gosimple:
+        go: "1.16"
+        checks: [ "all" ]
+
+    govet:
+        check-shadowing: false
+        settings:
+            printf: # analyzer name, run `go tool vet help` to see all analyzers
+                funcs: # run `go tool vet help printf` to see available settings for `printf` analyzer
+                    - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+                    - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+                    - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+                    - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+        disable-all: true
+        enable:
+            - asmdecl
+            - assign
+            - atomic
+            - atomicalign
+            - bools
+            - buildtag
+            - cgocall
+            - composites
+            - copylocks
+            - deepequalerrors
+            - errorsas
+            - findcall
+            - framepointer
+            - httpresponse
+            - ifaceassert
+            - loopclosure
+            - lostcancel
+            - nilfunc
+            #            - nilness
+            - printf
+            - reflectvaluecompare
+            - shift
+            - sigchanyzer
+            - sortslice
+            - stdmethods
+            - stringintconv
+            - structtag
+            - testinggoroutine
+            - tests
+            - unmarshal
+            - unreachable
+            - unsafeptr
+            - unusedresult
+    #            - unusedwrite
+    lll:
+        line-length: 120
+        tab-width: 4
+    misspell:
+        ignore-words:
+            - qrobot
+            - qwhale
+            - rela
+    nakedret:
+        max-func-lines: 200
+    nestif:
+        min-complexity: 6
+    staticcheck:
+        go: "1.16"
+        checks:
+            - SA1000
+            - SA1001
+            - SA1002
+            - SA1003
+            - SA1004
+            - SA1005
+            - SA1006
+            - SA1007
+            - SA1008
+            - SA1010
+            - SA1011
+            - SA1012
+            - SA1013
+            - SA1014
+            - SA1015
+            - SA1016
+            - SA1017
+            - SA1018
+            - SA1020
+            - SA1021
+            - SA1023
+            - SA1024
+            - SA1025
+            - SA1026
+            - SA1027
+            - SA1028
+            - SA1029
+            - SA1030
+            - SA2000
+            - SA2001
+            - SA2002
+            - SA2003
+            - SA3000
+            - SA3001
+            - SA4000
+            - SA4001
+            - SA4003
+            - SA4004
+            - SA4005
+            - SA4008
+            - SA4009
+            - SA4010
+            - SA4011
+            - SA4012
+            - SA4013
+            - SA4014
+            - SA4015
+            - SA4016
+            - SA4017
+            - SA4018
+            - SA4019
+            - SA4020
+            - SA4021
+            - SA4022
+            - SA4023
+            - SA4024
+            - SA4025
+            - SA4026
+            - SA4027
+            - SA4028
+            - SA4029
+            - SA4030
+            - SA4031
+            - SA5000
+            - SA5001
+            - SA5002
+            - SA5003
+            - SA5004
+            - SA5005
+            - SA5007
+            - SA5008
+            - SA5009
+            - SA5010
+            - SA5011
+            - SA5012
+            - SA6000
+            - SA6001
+            - SA6002
+            - SA6003
+            - SA6005
+            - SA9001
+            - SA9002
+            - SA9003
+            - SA9004
+            - SA9005
+            - SA9006
+            - SA9007
+            - SA9008
+            - S1000
+            - S1001
+            - S1002
+            - S1003
+            - S1004
+            - S1005
+            - S1006
+            - S1007
+            - S1008
+            - S1009
+            - S1010
+            - S1011
+            - S1012
+            - S1016
+            - S1017
+            - S1018
+            - S1019
+            - S1020
+            - S1021
+            - S1023
+            - S1024
+            - S1025
+            - S1028
+            - S1029
+            - S1030
+            - S1031
+            - S1032
+            - S1033
+            - S1034
+            - S1035
+            - S1036
+            - S1037
+            - S1038
+            - S1039
+            - S1040
+            - ST1000
+            - ST1005
+            - ST1006
+            - ST1008
+            - ST1011
+            - ST1012
+            - ST1013
+            - ST1015
+            - ST1016
+            - ST1017
+            - ST1018
+            - ST1019
+            - ST1020
+            - ST1021
+            - ST1022
+            - ST1023
+            - QF1001
+            - QF1002
+            - QF1003
+            - QF1004
+            - QF1005
+            - QF1006
+            - QF1007
+            - QF1008
+            - QF1009
+            - QF1010
+            - QF1011
+            - QF1012
+    stylecheck:
+        go: "1.16"
+        checks:
+            - SA1000
+            - SA1001
+            - SA1002
+            - SA1003
+            - SA1004
+            - SA1005
+            - SA1006
+            - SA1007
+            - SA1008
+            - SA1010
+            - SA1011
+            - SA1012
+            - SA1013
+            - SA1014
+            - SA1015
+            - SA1016
+            - SA1018
+            - SA1020
+            - SA1021
+            - SA1023
+            - SA1024
+            - SA1025
+            - SA1026
+            - SA1027
+            - SA1028
+            - SA1029
+            - SA1030
+            - SA2000
+            - SA2001
+            - SA2002
+            - SA2003
+            - SA3000
+            - SA3001
+            - SA4000
+            - SA4001
+            - SA4003
+            - SA4004
+            - SA4005
+            - SA4008
+            - SA4009
+            - SA4010
+            - SA4011
+            - SA4012
+            - SA4013
+            - SA4014
+            - SA4015
+            - SA4016
+            - SA4017
+            - SA4018
+            - SA4019
+            - SA4020
+            - SA4021
+            - SA4022
+            - SA4023
+            - SA4024
+            - SA4025
+            - SA4026
+            - SA4027
+            - SA4028
+            - SA4029
+            - SA4030
+            - SA4031
+            - SA5000
+            - SA5001
+            - SA5002
+            - SA5003
+            - SA5004
+            - SA5005
+            - SA5007
+            - SA5008
+            - SA5009
+            - SA5010
+            - SA5011
+            - SA5012
+            - SA6000
+            - SA6001
+            - SA6002
+            - SA6003
+            - SA6005
+            - SA9001
+            - SA9002
+            - SA9003
+            - SA9004
+            - SA9005
+            - SA9006
+            - SA9007
+            - SA9008
+            - S1000
+            - S1001
+            - S1002
+            - S1003
+            - S1004
+            - S1005
+            - S1006
+            - S1007
+            - S1008
+            - S1009
+            - S1010
+            - S1011
+            - S1012
+            - S1016
+            - S1017
+            - S1018
+            - S1019
+            - S1020
+            - S1021
+            - S1023
+            - S1024
+            - S1025
+            - S1028
+            - S1029
+            - S1030
+            - S1031
+            - S1032
+            - S1033
+            - S1034
+            - S1035
+            - S1036
+            - S1037
+            - S1038
+            - S1039
+            - S1040
+            - ST1000
+            - ST1005
+            - ST1006
+            - ST1008
+            - ST1011
+            - ST1012
+            - ST1013
+            - ST1015
+            - ST1016
+            - ST1018
+            - ST1019
+            - ST1020
+            - ST1021
+            - ST1023
+            - QF1001
+            - QF1002
+            - QF1003
+            - QF1004
+            - QF1005
+            - QF1006
+            - QF1007
+            - QF1008
+            - QF1009
+            - QF1010
+            - QF1011
+            - QF1012
+        dot-import-whitelist:
+            - fmt
+        initialisms:
+            - "ASCII"
+            - "CPU"
+            - "DNS"
+            - "EOF"
+            - "QPS"
+            - "RAM"
+            - "RPC"
+            - "TCP"
+            - "TLS"
+            - "TTL"
+            - "UDP"
+            - "UTF8"
+            - "VM"
+            - "XML"
+            - "XMPP"
+            - "XSRF"
+            - "XSS"
+            - "Db"
+        http-status-code-whitelist: [ "200", "400", "404", "500", "301", "302" ]
+    varnamelen:
+        max-distance: 5
+        min-name-length: 1
+        check-receiver: false
+        check-return: false
+        ignore-type-assert-ok: true
+        ignore-map-index-ok: true
+        ignore-chan-recv-ok: true
+        ignore-names:
+            - err
+    gomnd:
+        ignored-functions:
+            - 'time.*'
+            - 'xtime.*'
+    forbidigo:
+        forbid:
+            - '"git.pinquest.cn/qlb/brick/log"'
+        exclude_godoc_examples: false
+    tagliatelle:
+        case:
+            rules:
+                json: snake
+                yaml: snake
+                xml: snake
+                bson: snake
+                avro: snake
+                toml: snake
+    nilnil:
+        checked-types:
+            - ptr
+            - func
+            - iface
+            - map
+            - chan
+    gocritic:
+        disabled-checks:
+            # 可能需要删除的代码
+            - commentedOutCode
+            - elseif
+            - rangeValCopy
+            - paramTypeCombine
+            - hugeParam
+            - regexpMust
+            - singleCaseSwitch
+            - stringConcatSimplify
+            - unnecessaryBlock
+            - ifElseChain
+            - appendCombine
+            - importShadow
+            - unnamedResult
+            - typeDefFirst
+            - appendAssign
+            - nestingReduce
+            - sloppyLen
+            - commentFormatting
+        enabled-tags:
+            - diagnostic
+            - style
+            - performance
+            - experimental
+            - opinionated
+        settings:
+            #            ruleguard:
+            #                # Enable debug to identify which 'Where' condition was rejected.
+            #                # The value of the parameter is the name of a function in a ruleguard file.
+            #                #
+            #                # When a rule is evaluated:
+            #                # If:
+            #                #   The Match() clause is accepted; and
+            #                #   One of the conditions in the Where() clause is rejected,
+            #                # Then:
+            #                #   ruleguard prints the specific Where() condition that was rejected.
+            #                #
+            #                # The flag is passed to the ruleguard 'debug-group' argument.
+            #                # Default: ""
+            #                debug: 'emptyDecl'
+            #                # Deprecated, use 'failOn' param.
+            #                # If set to true, identical to failOn='all', otherwise failOn=''
+            #                failOnError: false
+            #                # Determines the behavior when an error occurs while parsing ruleguard files.
+            #                # If flag is not set, log error and skip rule files that contain an error.
+            #                # If flag is set, the value must be a comma-separated list of error conditions.
+            #                # - 'all':    fail on all errors.
+            #                # - 'import': ruleguard rule imports a package that cannot be found.
+            #                # - 'dsl':    gorule file does not comply with the ruleguard DSL.
+            #                # Default: ""
+            #                failOn: dsl
+            #                # Comma-separated list of file paths containing ruleguard rules.
+            #                # If a path is relative, it is relative to the directory where the golangci-lint command is executed.
+            #                # The special '${configDir}' variable is substituted with the absolute directory containing the golangci config file.
+            #                # Glob patterns such as 'rules-*.go' may be specified.
+            #                # Default: ""
+            #                rules: '${configDir}/ruleguard/rules-*.go,${configDir}/myrule1.go'
+            #                # Comma-separated list of enabled groups or skip empty to enable everything.
+            #                # Tags can be defined with # character prefix.
+            #                # Default: "<all>"
+            #                enable: "myGroupName,#myTagName"
+            #                # Comma-separated list of disabled groups or skip empty to enable everything.
+            #                # Tags can be defined with # character prefix.
+            #                # Default: ""
+            #                disable: "myGroupName,#myTagName"
+            tooManyResultsChecker:
+                maxResults: 10
+            truncateCmp:
+                skipArchDependent: false
+            underef:
+                skipRecvDeref: false
+            unnamedResult:
+                checkExported: true
+            elseif:
+                skipBalanced: true
+            rangeValCopy:
+                sizeThreshold: 128
+                skipTestFuncs: true
+linters:
+    disable-all: true
+    fast: true
+    enable:
+        - asasalint
+        - asciicheck
+        - bidichk
+        - bodyclose
+        - containedctx
+        - contextcheck
+        - decorder
+        - depguard
+        - dogsled
+        - durationcheck
+        - errcheck
+        - errname
+        - errorlint
+        - execinquery
+        - exportloopref
+        - forbidigo
+        - gocritic
+        - godox
+        - goheader
+        - gomodguard
+        - gosec
+        - gosimple
+        - govet
+        - grouper
+        - importas
+        - ineffassign
+        - interfacebloat
+        - logrlint
+        - makezero
+        - misspell
+        - nilnil
+        - noctx
+        - nolintlint
+        - nosprintfhostport
+        - predeclared
+        - promlinter
+        - reassign
+        - rowserrcheck
+        - sqlclosecheck
+        - staticcheck
+        - stylecheck
+        - tenv
+        - tparallel
+        - unconvert
+        - unused
+        - usestdlibvars
+        - varnamelen
+        - wastedassign
